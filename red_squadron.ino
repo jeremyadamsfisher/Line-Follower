@@ -89,17 +89,18 @@ void loop()
 
   int sensor_neutral_range_left = 4;
   int sensor_neutral_range_right = -1 * sensor_neutral_range_left;
+  float less_than_one = 0.25;
 
   if(pos > sensor_neutral_range_left){
     // Drive motor A (and only motor A) at various speeds, then stop.
-    driveArdumoto(MOTOR_A, REVERSE, motorSpeed*0.5); // Set motor A to REVERSE at max
+    driveArdumoto(MOTOR_A, FORWARD, motorSpeed*less_than_one); // Set motor A to REVERSE at max
     driveArdumoto(MOTOR_B, FORWARD, motorSpeed);  // Set motor B to FORWARD at half
     //delay(1000);  // Motor A will spin as set for 1 second
   }
   
   else if(pos < sensor_neutral_range_right){
-     driveArdumoto(MOTOR_A, FORWARD, motorSpeed*0.5); // Set motor A to REVERSE at max
-    driveArdumoto(MOTOR_B, REVERSE, motorSpeed);  // Set motor B to FORWARD at half
+     driveArdumoto(MOTOR_B, FORWARD, motorSpeed*less_than_one); // Set motor A to REVERSE at max
+    driveArdumoto(MOTOR_A, FORWARD, motorSpeed);  // Set motor B to FORWARD at half
     //delay(1000);  // Motor A will keep trucking for 1 second  
   }
 
@@ -146,4 +147,3 @@ void setupArdumoto()
   digitalWrite(DIRA, LOW);
   digitalWrite(DIRB, LOW);
 }
-
