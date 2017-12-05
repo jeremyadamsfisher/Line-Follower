@@ -1,23 +1,3 @@
-    /* Ardumoto Example Sketch
-  by: Jim Lindblom
-  date: November 8, 2013
-  license: Public domain. Please use, reuse, and modify this 
-  sketch!
-
-  Adapted to v20 hardware by: Marshall Taylor
-  date: March 31, 2017
-
-  Three useful functions are defined:
-    setupArdumoto() -- Setup the Ardumoto Shield pins
-    driveArdumoto([motor], [direction], [speed]) -- Drive [motor] 
-      (0 for A, 1 for B) in [direction] (0 or 1) at a [speed]
-      between 0 and 255. It will spin until told to stop.
-    stopArdumoto([motor]) -- Stop driving [motor] (0 or 1).
-
-  setupArdumoto() is called in the setup().
-  The loop() demonstrates use of the motor driving functions.
-*/
-
 #include "Wire.h"
 #include "sensorbar.h"
 
@@ -49,7 +29,7 @@ SensorBar mySensorBar(SX1509_ADDRESS);
 void setup()
 {
   setupArdumoto(); // Set all pins as outputs
-   Serial.begin(9600);  // start serial for output
+  Serial.begin(9600);  // start serial for output
   Serial.println("Program started.");
   Serial.println();
   
@@ -65,12 +45,10 @@ void setup()
   
   //Don't forget to call .begin() to get the bar ready.  This configures HW.
   uint8_t returnStatus = mySensorBar.begin();
-  if(returnStatus)
-  {
+  if(returnStatus){
     Serial.println("sx1509 IC communication OK");
   }
-  else
-  {
+  else{
     Serial.println("sx1509 IC communication FAILED!");
     while(1);
   }
@@ -79,36 +57,16 @@ void setup()
 
 void loop()
 {
-  //uint8_t rawValue = mySensorBar.getRaw();
-  int motorSpeed = 255;
-  
-  Serial.println("Position");
   int pos = mySensorBar.getPosition();
-
+    
+  Serial.println("Position");
   Serial.println(pos);
 
-  int sensor_neutral_range_left = 4;
-  int sensor_neutral_range_right = -1 * sensor_neutral_range_left;
-  float less_than_one = 0.25;
+  float left_motor_speed_for_sensor_reading[37] = {255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 251.94444444444446, 248.88888888888889, 245.83333333333334, 242.77777777777777, 239.72222222222223, 236.66666666666666, 233.61111111111111, 230.55555555555554, 227.5, 224.44444444444446, 221.38888888888889, 218.33333333333334, 215.27777777777777, 212.22222222222223, 209.16666666666666, 206.11111111111111, 203.05555555555554, 200.0}
+  float right_motor_speed_for_sensor_reading[37] = {200.0, 203.05555555555554, 206.11111111111111, 209.16666666666666, 212.22222222222223, 215.27777777777777, 218.33333333333334, 221.38888888888889, 224.44444444444446, 227.5, 230.55555555555554, 233.61111111111111, 236.66666666666666, 239.72222222222223, 242.77777777777777, 245.83333333333334, 248.88888888888889, 251.94444444444446, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0}
 
-  if(pos > sensor_neutral_range_left){
-    // Drive motor A (and only motor A) at various speeds, then stop.
-    driveArdumoto(MOTOR_A, FORWARD, motorSpeed*less_than_one); // Set motor A to REVERSE at max
-    driveArdumoto(MOTOR_B, FORWARD, motorSpeed);  // Set motor B to FORWARD at half
-    //delay(1000);  // Motor A will spin as set for 1 second
-  }
-  
-  else if(pos < sensor_neutral_range_right){
-     driveArdumoto(MOTOR_B, FORWARD, motorSpeed*less_than_one); // Set motor A to REVERSE at max
-    driveArdumoto(MOTOR_A, FORWARD, motorSpeed);  // Set motor B to FORWARD at half
-    //delay(1000);  // Motor A will keep trucking for 1 second  
-  }
-
-  else {
-         driveArdumoto(MOTOR_A, FORWARD, motorSpeed); // Set motor A to REVERSE at max
-      driveArdumoto(MOTOR_B, FORWARD, motorSpeed);  // Set motor B to FORWARD at half
-      //delay(1000);  // Motor A will keep trucking for 1 second 
-    }
+  driveArdumoto(MOTOR_A, FORWARD, left_motor_speed_for_sensor_reading[pos]);
+  driveArdumoto(MOTOR_B, FORWARD, right_motor_speed_for_sensor_reading[pos]);
 }
 
 // driveArdumoto drives 'motor' in 'dir' direction at 'spd' speed
