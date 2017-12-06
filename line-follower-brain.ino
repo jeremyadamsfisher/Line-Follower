@@ -1,62 +1,43 @@
 #include "Wire.h"
 #include "sensorbar.h"
 
-// Clockwise and counter-clockwise definitions.
-// Depending on how you wired your motors, you may need to swap.
+// Clockwise and counter-clockwise definitions, and others
 #define FORWARD  0
 #define REVERSE 1
-
-// Motor definitions to make life easier:
 #define MOTOR_A 0
 #define MOTOR_B 1
 
-// Pin Assignments //
-//Default pins:
+// Pin Assignments
 #define DIRA 2 // Direction control for motor A
 #define PWMA 3  // PWM control (speed) for motor A
 #define DIRB 4 // Direction control for motor B
 #define PWMB 11 // PWM control (speed) for motor B
 
-////Alternate pins:
-//#define DIRA 8 // Direction control for motor A
-//#define PWMA 9 // PWM control (speed) for motor A
-//#define DIRB 7 // Direction control for motor B
-//#define PWMB 10 // PWM control (speed) for motor B
-
 const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 SensorBar mySensorBar(SX1509_ADDRESS);
 
-void setup()
-{
+void setup() {
   setupArdumoto(); // Set all pins as outputs
   Serial.begin(9600);  // start serial for output
   Serial.println("Program started.");
   Serial.println();
   
-  //For this demo, the IR will only be turned on during reads.
   mySensorBar.setBarStrobe();
-  //Other option: Command to run all the time
-  //mySensorBar.clearBarStrobe();
-
-  //Default dark on light
   mySensorBar.clearInvertBits();
-  //Other option: light line on dark
-  //mySensorBar.setInvertBits();
   
-  //Don't forget to call .begin() to get the bar ready.  This configures HW.
   uint8_t returnStatus = mySensorBar.begin();
   if(returnStatus){
     Serial.println("sx1509 IC communication OK");
   }
-  else{
+  else {
     Serial.println("sx1509 IC communication FAILED!");
     while(1);
   }
+  
   Serial.println();
 }
 
-void loop()
-{
+void loop() {
   int pos = mySensorBar.getPosition();
     
   Serial.println("Position");
@@ -69,30 +50,24 @@ void loop()
   driveArdumoto(MOTOR_B, FORWARD, right_motor_speed_for_sensor_reading[pos]);
 }
 
-// driveArdumoto drives 'motor' in 'dir' direction at 'spd' speed
-void driveArdumoto(byte motor, byte dir, byte spd)
-{
-  if (motor == MOTOR_A)
-  {
+void driveArdumoto(byte motor, byte dir, byte spd) {
+  if (motor == MOTOR_A) {
     digitalWrite(DIRA, dir);
     analogWrite(PWMA, spd);
   }
-  else if (motor == MOTOR_B)
-  {
+  else if (motor == MOTOR_B) {
     digitalWrite(DIRB, dir);
     analogWrite(PWMB, spd);
   }  
 }
 
 // stopArdumoto makes a motor stop
-void stopArdumoto(byte motor)
-{
+void stopArdumoto(byte motor) {
   driveArdumoto(motor, 0, 0);
 }
 
 // setupArdumoto initialize all pins
-void setupArdumoto()
-{
+void setupArdumoto() {
   // All pins should be setup as outputs:
   pinMode(PWMA, OUTPUT);
   pinMode(PWMB, OUTPUT);
