@@ -22,7 +22,6 @@ void setup() {
   Serial.println("Program started.");
   Serial.println();
   
-
   mySensorBar.setBarStrobe();
   mySensorBar.clearInvertBits();
   
@@ -34,6 +33,7 @@ void setup() {
     Serial.println("sx1509 IC communication FAILED!");
     while(1);
   }
+  
   Serial.println();
 }
 
