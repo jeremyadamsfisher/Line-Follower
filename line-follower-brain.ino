@@ -16,8 +16,7 @@
 const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 SensorBar mySensorBar(SX1509_ADDRESS);
 
-void setup()
-{
+void setup() {
   setupArdumoto(); // Set all pins as outputs
   Serial.begin(9600);  // start serial for output
   Serial.println("Program started.");
@@ -31,15 +30,14 @@ void setup()
   if(returnStatus){
     Serial.println("sx1509 IC communication OK");
   }
-  else{
+  else {
     Serial.println("sx1509 IC communication FAILED!");
     while(1);
   }
   Serial.println();
 }
 
-void loop()
-{
+void loop() {
   int pos = mySensorBar.getPosition();
     
   Serial.println("Position");
@@ -52,29 +50,24 @@ void loop()
   driveArdumoto(MOTOR_B, FORWARD, right_motor_speed_for_sensor_reading[pos]);
 }
 
-void driveArdumoto(byte motor, byte dir, byte spd)
-{
-  if (motor == MOTOR_A)
-  {
+void driveArdumoto(byte motor, byte dir, byte spd) {
+  if (motor == MOTOR_A) {
     digitalWrite(DIRA, dir);
     analogWrite(PWMA, spd);
   }
-  else if (motor == MOTOR_B)
-  {
+  else if (motor == MOTOR_B) {
     digitalWrite(DIRB, dir);
     analogWrite(PWMB, spd);
   }  
 }
 
 // stopArdumoto makes a motor stop
-void stopArdumoto(byte motor)
-{
+void stopArdumoto(byte motor) {
   driveArdumoto(motor, 0, 0);
 }
 
 // setupArdumoto initialize all pins
-void setupArdumoto()
-{
+void setupArdumoto() {
   // All pins should be setup as outputs:
   pinMode(PWMA, OUTPUT);
   pinMode(PWMB, OUTPUT);
