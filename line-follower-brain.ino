@@ -1,5 +1,21 @@
-#include "Wire.h"
-#include "sensorbar.h"
+#include <iostream>
+#include <math.h>
+
+/*
+Hi Jon.
+
+I just updated this so that it should work -- theoretically. Obviously, I can't
+compile this to test it. Feel free to call me if you need help.
+
+- Jeremy
+*/
+
+// Speed assignment
+int MAXSPEED = 255;
+int MINSPEED = 25;
+int diff = MAXSPEED - MINSPEED;
+float left_motor_speed_for_sensor_reading[37] = {};
+float right_motor_speed_for_sensor_reading[37] = {};
 
 // Clockwise and counter-clockwise definitions, and others
 #define FORWARD  0
@@ -17,6 +33,7 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 SensorBar mySensorBar(SX1509_ADDRESS);
 
 void setup() {
+  setupMotorSpeed();
   setupArdumoto(); // Set all pins as outputs
   Serial.begin(9600);  // start serial for output
   Serial.println("Program started.");
@@ -40,11 +57,8 @@ void setup() {
 void loop() {
   int pos = mySensorBar.getPosition();
     
-  Serial.println("Position");
-  Serial.println(pos);
-
-  float left_motor_speed_for_sensor_reading[37] = {255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 251.94444444444446, 248.88888888888889, 245.83333333333334, 242.77777777777777, 239.72222222222223, 236.66666666666666, 233.61111111111111, 230.55555555555554, 227.5, 224.44444444444446, 221.38888888888889, 218.33333333333334, 215.27777777777777, 212.22222222222223, 209.16666666666666, 206.11111111111111, 203.05555555555554, 200.0}
-  float right_motor_speed_for_sensor_reading[37] = {200.0, 203.05555555555554, 206.11111111111111, 209.16666666666666, 212.22222222222223, 215.27777777777777, 218.33333333333334, 221.38888888888889, 224.44444444444446, 227.5, 230.55555555555554, 233.61111111111111, 236.66666666666666, 239.72222222222223, 242.77777777777777, 245.83333333333334, 248.88888888888889, 251.94444444444446, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0}
+  //Serial.println("Position");
+  //Serial.println(pos);
 
   driveArdumoto(MOTOR_A, FORWARD, left_motor_speed_for_sensor_reading[pos]);
   driveArdumoto(MOTOR_B, FORWARD, right_motor_speed_for_sensor_reading[pos]);
@@ -79,4 +93,21 @@ void setupArdumoto() {
   digitalWrite(PWMB, LOW);
   digitalWrite(DIRA, LOW);
   digitalWrite(DIRB, LOW);
+}
+
+void setupMotorSpeed(){
+    for (int i = 0; i < 37; i = i + 1){
+    if (i > 16) {
+      left_motor_speed_for_sensor_reading[i] = MAXSPEED;
+      right_motor_speed_for_sensor_reading[i] = MINSPEED - diff * sin(1.5*i);
+    }
+    else if (i == 16) {
+      left_motor_speed_for_sensor_reading[i] = MAXSPEED;
+      right_motor_speed_for_sensor_reading[i] = MAXSPEED;
+    }
+    else if (i < 16) {
+      left_motor_speed_for_sensor_reading[i] = MAXSPEED - diff * sin(1.5*i);;
+      right_motor_speed_for_sensor_reading[i] = MINSPEED;
+    }
+  }
 }
